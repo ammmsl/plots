@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Island Load Variation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .controls {
+            width: 250px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        .plot-container {
+            flex: 1;
+            min-height: 600px;
+        }
+        .group {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .group-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+        .group-header:hover {
+            color: #007bff;
+        }
+        .group-items {
+            margin-left: 10px;
+        }
+        .checkbox-item {
+            margin: 5px 0;
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .select-all-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .select-all-btn:hover {
+            background-color: #0056b3;
+        }
+        .deselect-all-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .deselect-all-btn:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <h1>Summer Island Load Variation</h1>
+    <div class="container">
+        <div class="controls">
+            <div style="margin-bottom: 15px;">
+                <button class="select-all-btn" onclick="selectAll()">Select All</button>
+                <button class="deselect-all-btn" onclick="deselectAll()">Deselect All</button>
+            </div>
+            
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('load')">
+                    <input type="checkbox" id="group-load" onchange="toggleGroupSelection('load')" checked>
+                    📊 Load
+                </div>
+                <div class="group-items" id="load-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="present-load" class="group-load" checked>
+                        <label for="present-load">Present Load</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="predicted-load" class="group-load" checked>
+                        <label for="predicted-load">Predicted Load</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('solar')">
+                    <input type="checkbox" id="group-solar" onchange="toggleGroupSelection('solar')" checked>
+                    ☀️ Solar
+                </div>
+                <div class="group-items" id="solar-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="solar-power" class="group-solar" checked>
+                        <label for="solar-power">Solar Power</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="diesel-demand" class="group-solar" checked>
+                        <label for="diesel-demand">Diesel Demand</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('current')">
+                    <input type="checkbox" id="group-current" onchange="toggleGroupSelection('current')">
+                    🔧 Current Configurations
+                </div>
+                <div class="group-items" id="current-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="810-575-75" class="group-current">
+                        <label for="810-575-75">810+575 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="810-200-75" class="group-current">
+                        <label for="810-200-75">810+200 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="200-638-75" class="group-current">
+                        <label for="200-638-75">200+638 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="638-75" class="group-current">
+                        <label for="638-75">638 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="575-75" class="group-current">
+                        <label for="575-75">575 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="810-75" class="group-current">
+                        <label for="810-75">810 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="200-75" class="group-current">
+                        <label for="200-75">200 75%</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('250kva')">
+                    <input type="checkbox" id="group-250kva" onchange="toggleGroupSelection('250kva')">
+                    ⚡ 250kVA Unit
+                </div>
+                <div class="group-items" id="250kva-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="810-250vp-75" class="group-250kva">
+                        <label for="810-250vp-75">810+250(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="638-250vp-75" class="group-250kva">
+                        <label for="638-250vp-75">638+250(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="575-250vp-75" class="group-250kva">
+                        <label for="575-250vp-75">575+250(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="200-250vp-75" class="group-250kva">
+                        <label for="200-250vp-75">200+250(VP) 75%</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('650kva')">
+                    <input type="checkbox" id="group-650kva" onchange="toggleGroupSelection('650kva')">
+                    ⚡ 650kVA Unit
+                </div>
+                <div class="group-items" id="650kva-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="810-650vp-75" class="group-650kva">
+                        <label for="810-650vp-75">810+650(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="638-650vp-75" class="group-650kva">
+                        <label for="638-650vp-75">638+650(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="575-650vp-75" class="group-650kva">
+                        <label for="575-650vp-75">575+650(VP) 75%</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="200-650vp-75" class="group-650kva">
+                        <label for="200-650vp-75">200+650(VP) 75%</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="plot-container">
+            <div id="plot" style="width: 100%; height: 600px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const data = {
+            time: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+            'Present Load': [237.1555765,230,237.1555765,258.1346652,291.507576,335,385.6480005,440,494.3519995,545,588.492424,621.8653348,642.8444235,650,642.8444235,621.8653348,588.492424,545,494.3519995,440,385.6480005,335,291.507576,258.1346652,237.1555765],
+            'Predicted Load': [272.728913,264.5,272.728913,296.854865,335.2337123,385.25,443.4952006,506,568.5047994,626.75,676.7662877,715.145135,739.271087,747.5,739.271087,715.145135,676.7662877,626.75,568.5047994,506,443.4952006,385.25,335.2337123,296.854865,272.728913],
+            'Solar Power': [0,0,0,0,0,0,0,182.8401262,353.22,499.5285145,611.7949862,682.3686407,706.44,682.3686407,611.7949862,499.5285145,353.22,182.8401262,8.65494E-14,0,0,0,0,0,0],
+            'Diesel Demand': [237.2,230.0,237.2,258.1,291.5,335.0,385.6,257.2,141.1,45.5,-23.3,-60.5,-63.6,-32.4,31.0,122.3,235.3,362.2,494.4,440.0,385.6,335.0,291.5,258.1,237.2],
+            '810+575 75%': [833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833],
+            '810 75%': [488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488],
+            '810+200 75%': [608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608],
+            '200+638 75%': [501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501],
+            '575 75%': [345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345],
+            '200 75%': [120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120],
+            '638 75%': [381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381],
+            '575+250(VP) 75%': [495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495],
+            '810+250(VP) 75%': [638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638],
+            '200+250(VP) 75%': [270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270],
+            '638+250(VP) 75%': [531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531],
+            '575+650(VP) 75%': [735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735],
+            '810+650(VP) 75%': [878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878],
+            '200+650(VP) 75%': [510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510],
+            '638+650(VP) 75%': [771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771]
+        };
+
+        // Configuration for different groups
+        const groups = {
+            load: {
+                color: ['#228B22', '#32CD32'], // Green tones
+                series: ['Present Load', 'Predicted Load'],
+                mode: 'markers+lines',
+                symbols: ['circle', 'square'],
+                ids: ['present-load', 'predicted-load']
+            },
+            solar: {
+                color: ['#FF8C00', '#FF6347'], // Orange tones
+                series: ['Solar Power', 'Diesel Demand'],
+                mode: 'markers+lines',
+                symbols: ['diamond', 'triangle-up'],
+                ids: ['solar-power', 'diesel-demand']
+            },
+            current: {
+                color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6495ED', '#B0C4DE', '#4682B4'], // Extended blue tones
+                series: ['810+575 75%', '810 75%', '810+200 75%', '200+638 75%', '575 75%', '200 75%', '638 75%'],
+                mode: 'lines',
+                dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
+                ids: ['810-575-75', '810-75', '810-200-75', '200-638-75', '575-75', '200-75', '638-75']
+            },
+            '250kva': {
+                color: ['#DC143C', '#B22222', '#FF1493', '#C71585'], // Red/Pink tones
+                series: ['575+250(VP) 75%', '810+250(VP) 75%', '200+250(VP) 75%', '638+250(VP) 75%'],
+                mode: 'lines',
+                dash: ['solid', 'dash', 'dot', 'dashdot'],
+                ids: ['575-250vp-75', '810-250vp-75', '200-250vp-75', '638-250vp-75']
+            },
+            '650kva': {
+                color: ['#9370DB', '#8A2BE2', '#9932CC', '#BA55D3'], // Purple tones
+                series: ['575+650(VP) 75%', '810+650(VP) 75%', '200+650(VP) 75%', '638+650(VP) 75%'],
+                mode: 'lines',
+                dash: ['solid', 'dash', 'dot', 'dashdot'],
+                ids: ['575-650vp-75', '810-650vp-75', '200-650vp-75', '638-650vp-75']
+            }
+        };
+
+        function createPlot() {
+            const traces = [];
+            
+            Object.keys(groups).forEach(groupKey => {
+                const group = groups[groupKey];
+                group.series.forEach((seriesName, index) => {
+                    const checkbox = document.getElementById(group.ids[index]);
+                    
+                    if (checkbox && checkbox.checked) {
+                        const trace = {
+                            x: data.time,
+                            y: data[seriesName],
+                            name: seriesName,
+                            type: 'scatter',
+                            mode: group.mode,
+                            line: {
+                                color: group.color[index],
+                                width: 2
+                            },
+                            marker: {
+                                color: group.color[index],
+                                size: 6
+                            }
+                        };
+
+                        if (group.symbols) {
+                            trace.marker.symbol = group.symbols[index];
+                        }
+
+                        if (group.dash) {
+                            trace.line.dash = group.dash[index];
+                        }
+
+                        traces.push(trace);
+                    }
+                });
+            });
+
+            const layout = {
+                title: {
+                    text: 'Summer Island Load Variation',
+                    font: { size: 20 }
+                },
+                xaxis: {
+                    title: 'Time (hr)',
+                    gridcolor: '#e6e6e6'
+                },
+                yaxis: {
+                    title: 'Load (kW)',
+                    gridcolor: '#e6e6e6'
+                },
+                plot_bgcolor: 'white',
+                paper_bgcolor: 'white',
+                legend: {
+                    x: 1.02,
+                    y: 1,
+                    orientation: 'v'
+                },
+                margin: {
+                    l: 80,
+                    r: 150,
+                    t: 60,
+                    b: 60
+                }
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines'],
+                displaylogo: false
+            };
+
+            Plotly.newPlot('plot', traces, layout, config);
+        }
+
+        function toggleGroup(groupName) {
+            const items = document.getElementById(groupName + '-items');
+            if (items.style.display === 'none') {
+                items.style.display = 'block';
+            } else {
+                items.style.display = 'none';
+            }
+        }
+
+        function toggleGroupSelection(groupName) {
+            const groupCheckbox = document.getElementById('group-' + groupName);
+            const itemCheckboxes = document.querySelectorAll('.group-' + groupName);
+            
+            itemCheckboxes.forEach(cb => {
+                cb.checked = groupCheckbox.checked;
+            });
+            
+            createPlot();
+        }
+
+        function updateGroupCheckbox(groupName) {
+            const itemCheckboxes = document.querySelectorAll('.group-' + groupName);
+            const groupCheckbox = document.getElementById('group-' + groupName);
+            
+            const checkedCount = Array.from(itemCheckboxes).filter(cb => cb.checked).length;
+            
+            if (checkedCount === 0) {
+                groupCheckbox.checked = false;
+                groupCheckbox.indeterminate = false;
+            } else if (checkedCount === itemCheckboxes.length) {
+                groupCheckbox.checked = true;
+                groupCheckbox.indeterminate = false;
+            } else {
+                groupCheckbox.checked = false;
+                groupCheckbox.indeterminate = true;
+            }
+        }
+
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            createPlot();
+        }
+
+        function deselectAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            createPlot();
+        }
+
+        // Add event listeners to all checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([id^="group-"])');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Update group checkbox state
+                    const groups = ['load', 'solar', 'current', '250kva', '650kva'];
+                    groups.forEach(groupName => {
+                        if (checkbox.classList.contains('group-' + groupName)) {
+                            updateGroupCheckbox(groupName);
+                        }
+                    });
+                    createPlot();
+                });
+            });
+            
+            // Initial plot
+            createPlot();
+        });
+    </script>
+</body>
+</html>
