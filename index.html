@@ -323,6 +323,8 @@
             '200+650(VP) 75%': [510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510],
             '638+650(VP) 75%': [771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771]
         };
+        data['Predicted Load'] = data['Present Load'].map(load => load * 1.15);
+        data['Diesel Demand'] = data['Present Load'].map((load, index) => load - data['Solar Power'][index]);
         let selectedPoints = [];
         
         // Add event listener after plot creation
