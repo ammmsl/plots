@@ -109,8 +109,25 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            min-width: 300px;
+            min-width: 400px;
+            max-width: 500px;
             z-index: 1001;
+        }
+        
+        .popup h3, .popup h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .popup hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 15px 0;
+        }
+        
+        .popup p {
+            margin: 8px 0;
+            line-height: 1.4;
         }
         
         .popup-close {
@@ -127,6 +144,7 @@
         .popup-close:hover {
             color: #000;
         }
+        
     </style>
 </head>
 <body>
@@ -334,19 +352,52 @@
                 selectedPoints = [clickedPoint]; // Start new selection
             }
         }
-        
+        function calculateEnergy(dataArray) {
+            let totalEnergy = 0;
+            
+            // Using trapezoidal rule for integration
+            for (let i = 0; i < dataArray.length - 1; i++) {
+                const timeStep = 1; // 1 hour intervals
+                const avgPower = (dataArray[i] + dataArray[i + 1]) / 2;
+                totalEnergy += avgPower * timeStep; // kW * hours = kWh
+            }
+            
+            return totalEnergy;
+        }
         function showDifferencePopup() {
             const point1 = selectedPoints[0];
             const point2 = selectedPoints[1];
-            const difference = Math.abs(point2.y - point1.y);
+            const pointDifference = Math.abs(point2.y - point1.y);
+            
+            // Get the full data arrays for both series
+            const series1Data = data[point1.seriesName];
+            const series2Data = data[point2.seriesName];
+            
+            // Calculate total energy for each series
+            const energy1 = calculateEnergy(series1Data);
+            const energy2 = calculateEnergy(series2Data);
+            const energyDifference = Math.abs(energy2 - energy1);
             
             const content = `
-                <h3>Load Difference Calculation</h3>
+                <h3>Load Difference & Energy Analysis</h3>
                 <p><strong>Time:</strong> ${point1.x}:00 hours</p>
+                
+                <h4>Point Comparison:</h4>
                 <p><strong>Point 1:</strong> ${point1.seriesName} = ${point1.y.toFixed(1)} kW</p>
                 <p><strong>Point 2:</strong> ${point2.seriesName} = ${point2.y.toFixed(1)} kW</p>
+                <p><strong>Point Difference:</strong> ${pointDifference.toFixed(1)} kW</p>
+                
                 <hr>
-                <p><strong>Difference:</strong> ${difference.toFixed(1)} kW</p>
+                
+                <h4>24-Hour Energy Analysis:</h4>
+                <p><strong>${point1.seriesName}:</strong> ${energy1.toFixed(1)} kWh</p>
+                <p><strong>${point2.seriesName}:</strong> ${energy2.toFixed(1)} kWh</p>
+                <p><strong>Energy Difference:</strong> ${energyDifference.toFixed(1)} kWh</p>
+                
+                <hr>
+                
+                <h4>Insights:</h4>
+                <p><strong>Peak Shaving Potential:</strong> ${energyDifference > 0 ? energyDifference.toFixed(1) + ' kWh daily savings possible' : 'No significant difference'}</p>
             `;
             
             document.getElementById('popup-content').innerHTML = content;
@@ -358,6 +409,16 @@
         function closePopup() {
             document.getElementById('popup-overlay').style.display = 'none';
         }
+        function updateLegendWithEnergy() {
+            // Calculate and display energy for all visible series
+            Object.keys(data).forEach(seriesName => {
+                if (seriesName !== 'time') {
+                    const energy = calculateEnergy(data[seriesName]);
+                    console.log(`${seriesName}: ${energy.toFixed(1)} kWh`);
+                }
+            });
+        }
+        
         // Configuration for different groups
         const groups = {
             load: {
