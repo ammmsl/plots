@@ -89,6 +89,44 @@
         .deselect-all-btn:hover {
             background-color: #545b62;
         }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+            z-index: 1001;
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .popup-close:hover {
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -233,6 +271,12 @@
         <div class="plot-container">
             <div id="plot" style="width: 100%; height: 600px;"></div>
         </div>
+        <div id="popup-overlay" class="popup-overlay" onclick="closePopup()">
+            <div class="popup" onclick="event.stopPropagation()">
+                <button class="popup-close" onclick="closePopup()">&times;</button>
+                <div id="popup-content"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -261,7 +305,59 @@
             '200+650(VP) 75%': [510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510],
             '638+650(VP) 75%': [771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771]
         };
-
+        let selectedPoints = [];
+        
+        // Add event listener after plot creation
+        function addClickListener() {
+            document.getElementById('plot').on('plotly_click', handlePlotClick);
+        }
+        
+        function handlePlotClick(data) {
+            const point = data.points[0];
+            const clickedPoint = {
+                x: point.x,
+                y: point.y,
+                seriesName: point.data.name
+            };
+            
+            selectedPoints.push(clickedPoint);
+            
+            if (selectedPoints.length === 2) {
+                // Check if both points have same x value
+                if (selectedPoints[0].x === selectedPoints[1].x) {
+                    showDifferencePopup();
+                } else {
+                    alert("Please select two points with the same time (x-value)");
+                    selectedPoints = []; // Reset selection
+                }
+            } else if (selectedPoints.length > 2) {
+                selectedPoints = [clickedPoint]; // Start new selection
+            }
+        }
+        
+        function showDifferencePopup() {
+            const point1 = selectedPoints[0];
+            const point2 = selectedPoints[1];
+            const difference = Math.abs(point2.y - point1.y);
+            
+            const content = `
+                <h3>Load Difference Calculation</h3>
+                <p><strong>Time:</strong> ${point1.x}:00 hours</p>
+                <p><strong>Point 1:</strong> ${point1.seriesName} = ${point1.y.toFixed(1)} kW</p>
+                <p><strong>Point 2:</strong> ${point2.seriesName} = ${point2.y.toFixed(1)} kW</p>
+                <hr>
+                <p><strong>Difference:</strong> ${difference.toFixed(1)} kW</p>
+            `;
+            
+            document.getElementById('popup-content').innerHTML = content;
+            document.getElementById('popup-overlay').style.display = 'block';
+            
+            selectedPoints = []; // Reset selection
+        }
+        
+        function closePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        }
         // Configuration for different groups
         const groups = {
             load: {
@@ -375,6 +471,8 @@
             };
 
             Plotly.newPlot('plot', traces, layout, config);
+            
+            addClickListener();
         }
 
         function toggleGroup(groupName) {
