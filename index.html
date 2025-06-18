@@ -327,12 +327,13 @@
         data['Diesel Demand'] = data['Present Load'].map((load, index) => load - data['Solar Power'][index]);
         let selectedPoints = [];
         let selectedAreaPoints = [];
-        let areaPopupVisible = false;
+        let areaPopupVisible = false;        
         
         // Add event listener after plot creation
         function addClickListener() {
             document.getElementById('plot').on('plotly_click', handlePlotClick);
         }
+        
         function handlePlotClick(data) {
             const point = data.points[0];
             const clickedPoint = {
@@ -341,11 +342,10 @@
                 seriesName: point.data.name
             };
             
-            // Close area popup if it's visible and start new area calculation
+            // If area popup is visible, start new region detection
             if (areaPopupVisible) {
                 areaPopupVisible = false;
-                selectedAreaPoints = [];
-                handleAreaClick(data);  // Start new area calculation
+                handleRegionClick(data);
                 return;
             }
             
@@ -356,10 +356,9 @@
                 if (selectedPoints[0].x === selectedPoints[1].x) {
                     showDifferencePopup();
                 } else {
-                    // Different x values - calculate area between series
+                    // Different x values - try region detection instead
                     selectedPoints = []; // Reset point selection
-                    selectedAreaPoints = []; // Reset area selection
-                    handleAreaClick(data); // Start area calculation
+                    handleRegionClick(data);
                 }
             } else if (selectedPoints.length > 2) {
                 selectedPoints = [clickedPoint]; // Start new selection
@@ -420,7 +419,31 @@
             areaPopupVisible = false;
             selectedAreaPoints = [];
         }
-        function findIntersections(series1Data, series2Data, timeData) {
+        function findAllIntersections() {
+            const intersections = [];
+            const visibleSeries = getVisibleSeries();
+            
+            // Find intersections between all pairs of visible series
+            for (let i = 0; i < visibleSeries.length; i++) {
+                for (let j = i + 1; j < visibleSeries.length; j++) {
+                    const series1 = visibleSeries[i];
+                    const series2 = visibleSeries[j];
+                    const seriesIntersections = findIntersectionsBetweenSeries(data[series1], data[series2], data.time);
+                    
+                    seriesIntersections.forEach(intersection => {
+                        intersections.push({
+                            ...intersection,
+                            series1: series1,
+                            series2: series2
+                        });
+                    });
+                }
+            }
+            
+            return intersections.sort((a, b) => a.x - b.x);
+        }
+        
+        function findIntersectionsBetweenSeries(series1Data, series2Data, timeData) {
             const intersections = [];
             
             for (let i = 0; i < series1Data.length - 1; i++) {
@@ -435,7 +458,7 @@
                 const diff1 = y1_s1 - y1_s2;
                 const diff2 = y2_s1 - y2_s2;
                 
-                if (diff1 * diff2 < 0) { // Lines cross
+                if (Math.abs(diff1) > 1e-10 && Math.abs(diff2) > 1e-10 && diff1 * diff2 < 0) {
                     // Linear interpolation to find intersection point
                     const t = Math.abs(diff1) / (Math.abs(diff1) + Math.abs(diff2));
                     const intersectX = x1 + t * (x2 - x1);
@@ -444,7 +467,7 @@
                     intersections.push({
                         x: intersectX,
                         y: intersectY,
-                        index: i + t
+                        timeIndex: i + t
                     });
                 }
             }
@@ -452,108 +475,149 @@
             return intersections;
         }
         
-        function calculateAreaBetweenSeries(series1Data, series2Data, startIndex, endIndex) {
-            let area = 0;
-            const step = 0.1; // Higher resolution for more accurate area calculation
+        function getVisibleSeries() {
+            const visible = [];
+            Object.keys(data).forEach(seriesName => {
+                if (seriesName !== 'time') {
+                    // Try to find corresponding checkbox
+                    const possibleIds = [
+                        seriesName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                        seriesName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                        seriesName.replace(/\s+/g, '-').toLowerCase()
+                    ];
+                    
+                    for (let id of possibleIds) {
+                        const checkbox = document.getElementById(id);
+                        if (checkbox && checkbox.checked) {
+                            visible.push(seriesName);
+                            break;
+                        }
+                    }
+                }
+            });
+            return visible;
+        }
+        
+        function getSeriesValueAtX(seriesData, timeData, targetX) {
+            // Find the closest time points
+            for (let i = 0; i < timeData.length - 1; i++) {
+                if (timeData[i] <= targetX && targetX <= timeData[i + 1]) {
+                    // Linear interpolation
+                    const t = (targetX - timeData[i]) / (timeData[i + 1] - timeData[i]);
+                    return seriesData[i] + t * (seriesData[i + 1] - seriesData[i]);
+                }
+            }
+            return null;
+        }
+        
+        function findEnclosingRegion(clickX, clickY) {
+            const allIntersections = findAllIntersections();
+            const visibleSeries = getVisibleSeries();
             
-            for (let i = startIndex; i < endIndex; i += step) {
-                const floorI = Math.floor(i);
-                const ceilI = Math.min(Math.ceil(i), series1Data.length - 1);
-                const t = i - floorI;
+            if (allIntersections.length < 2) {
+                return null; // Need at least 2 intersections to form a region
+            }
+            
+            // Find intersections that bracket the click point in X
+            let leftBoundary = null;
+            let rightBoundary = null;
+            
+            for (let i = 0; i < allIntersections.length - 1; i++) {
+                const currentIntersection = allIntersections[i];
+                const nextIntersection = allIntersections[i + 1];
                 
-                // Linear interpolation
-                const y1 = series1Data[floorI] + t * (series1Data[ceilI] - series1Data[floorI]);
-                const y2 = series2Data[floorI] + t * (series2Data[ceilI] - series2Data[floorI]);
+                if (currentIntersection.x <= clickX && clickX <= nextIntersection.x) {
+                    // Check if click point is actually between the curves in this region
+                    const midX = (currentIntersection.x + nextIntersection.x) / 2;
+                    
+                    // Get all series values at the middle point
+                    const seriesValues = [];
+                    visibleSeries.forEach(seriesName => {
+                        const value = getSeriesValueAtX(data[seriesName], data.time, midX);
+                        if (value !== null) {
+                            seriesValues.push({ name: seriesName, value: value });
+                        }
+                    });
+                    
+                    // Sort by value to find which curves bound this region
+                    seriesValues.sort((a, b) => a.value - b.value);
+                    
+                    // Check if click Y is between any two consecutive curves
+                    for (let j = 0; j < seriesValues.length - 1; j++) {
+                        const lowerCurve = seriesValues[j];
+                        const upperCurve = seriesValues[j + 1];
+                        
+                        if (lowerCurve.value <= clickY && clickY <= upperCurve.value) {
+                            leftBoundary = currentIntersection;
+                            rightBoundary = nextIntersection;
+                            
+                            return {
+                                leftBoundary,
+                                rightBoundary,
+                                lowerSeries: lowerCurve.name,
+                                upperSeries: upperCurve.name,
+                                startX: currentIntersection.x,
+                                endX: nextIntersection.x
+                            };
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        function calculateEnclosedArea(region) {
+            const { lowerSeries, upperSeries, startX, endX } = region;
+            const lowerData = data[lowerSeries];
+            const upperData = data[upperSeries];
+            const timeData = data.time;
+            
+            let area = 0;
+            const step = 0.01; // High resolution for accuracy
+            
+            for (let x = startX; x < endX; x += step) {
+                const lowerY = getSeriesValueAtX(lowerData, timeData, x);
+                const upperY = getSeriesValueAtX(upperData, timeData, x);
                 
-                area += Math.abs(y1 - y2) * step;
+                if (lowerY !== null && upperY !== null) {
+                    area += Math.abs(upperY - lowerY) * step;
+                }
             }
             
             return area;
         }
         
-        function handleAreaClick(clickData) {
+        function handleRegionClick(clickData) {
             const point = clickData.points[0];
-            const clickedX = point.x;
-            const seriesName = point.data.name;
+            const clickX = point.x;
+            const clickY = point.y;
             
-            // Find all series that have data at this point
-            const availableSeries = [];
-            Object.keys(data).forEach(key => {
-                if (key !== 'time' && data[key]) {
-                    const checkbox = document.querySelector(`input[type="checkbox"][id*="${key.toLowerCase().replace(/[^a-z0-9]/g, '-')}"]`);
-                    if (checkbox && checkbox.checked) {
-                        availableSeries.push(key);
-                    }
-                }
-            });
+            const region = findEnclosingRegion(clickX, clickY);
             
-            if (availableSeries.length < 2) {
-                alert("Please select at least 2 series to calculate area between them");
-                return;
-            }
-            
-            selectedAreaPoints.push({
-                x: clickedX,
-                seriesName: seriesName,
-                availableSeries: availableSeries
-            });
-            
-            if (selectedAreaPoints.length === 2) {
-                calculateAndShowArea();
-            } else if (selectedAreaPoints.length > 2) {
-                selectedAreaPoints = [selectedAreaPoints[selectedAreaPoints.length - 1]]; // Keep only the latest point
+            if (region) {
+                const area = calculateEnclosedArea(region);
+                showRegionPopup(region, area);
+            } else {
+                // Fallback to old behavior or show message
+                alert("No enclosed region found at this location. Try clicking between intersecting curves.");
             }
         }
         
-        function calculateAndShowArea() {
-            if (selectedAreaPoints.length !== 2) return;
-            
-            const point1 = selectedAreaPoints[0];
-            const point2 = selectedAreaPoints[1];
-            
-            // Find common series between the two points
-            const commonSeries = point1.availableSeries.filter(series => 
-                point2.availableSeries.includes(series)
-            );
-            
-            if (commonSeries.length < 2) {
-                alert("Not enough common series between selected points");
-                selectedAreaPoints = [];
-                return;
-            }
-            
-            const startX = Math.min(point1.x, point2.x);
-            const endX = Math.max(point1.x, point2.x);
-            
-            // Calculate area between first two common series
-            const series1Name = commonSeries[0];
-            const series2Name = commonSeries[1];
-            const series1Data = data[series1Name];
-            const series2Data = data[series2Name];
-            
-            const area = calculateAreaBetweenSeries(series1Data, series2Data, startX, endX);
-            const energyDifference = area; // Since we're dealing with power over time
-            
-            showAreaPopup(series1Name, series2Name, startX, endX, energyDifference);
-        }
-        
-        function showAreaPopup(series1Name, series2Name, startX, endX, energyDifference) {
+        function showRegionPopup(region, area) {
             const content = `
-                <h3>Area Between Series</h3>
-                <p><strong>Time Range:</strong> ${startX.toFixed(1)} - ${endX.toFixed(1)} hours</p>
-                <p><strong>Series 1:</strong> ${series1Name}</p>
-                <p><strong>Series 2:</strong> ${series2Name}</p>
-                <p><strong>Area Difference:</strong> ${energyDifference.toFixed(1)} kWh</p>
-                <p><em>Click another point to calculate new area</em></p>
+                <h3>Enclosed Region Area</h3>
+                <p><strong>Time Range:</strong> ${region.startX.toFixed(2)} - ${region.endX.toFixed(2)} hours</p>
+                <p><strong>Upper Boundary:</strong> ${region.upperSeries}</p>
+                <p><strong>Lower Boundary:</strong> ${region.lowerSeries}</p>
+                <p><strong>Enclosed Area:</strong> ${area.toFixed(1)} kWh</p>
+                <p><em>Click another region to calculate new area</em></p>
             `;
             
             document.getElementById('popup-content').innerHTML = content;
             document.getElementById('popup-overlay').style.display = 'block';
             areaPopupVisible = true;
-            
-            selectedAreaPoints = []; // Reset selection
         }
-                
         function updateLegendWithEnergy() {
             // Calculate and display energy for all visible series
             Object.keys(data).forEach(seriesName => {
