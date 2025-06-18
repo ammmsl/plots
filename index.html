@@ -89,6 +89,13 @@
         .deselect-all-btn:hover {
             background-color: #545b62;
         }
+        <div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
+            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Interaction Mode:</label>
+            <input type="radio" id="mode-points" name="interaction-mode" value="points" checked>
+            <label for="mode-points" style="margin-right: 15px;">Point Comparison</label>
+            <input type="radio" id="mode-area" name="interaction-mode" value="area">
+            <label for="mode-area">Area Calculation</label>
+        </div>
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -328,7 +335,24 @@
         let selectedPoints = [];
         let selectedAreaPoints = [];
         let areaPopupVisible = false;        
+        let interactionMode = 'points'; // Default mode
         
+        // Add mode change listener
+        function updateInteractionMode() {
+            const pointsMode = document.getElementById('mode-points');
+            const areaMode = document.getElementById('mode-area');
+            
+            if (pointsMode.checked) {
+                interactionMode = 'points';
+            } else if (areaMode.checked) {
+                interactionMode = 'area';
+            }
+            
+            // Reset selections when mode changes
+            selectedPoints = [];
+            selectedAreaPoints = [];
+            closePopup();
+        }
         // Add event listener after plot creation
         function addClickListener() {
             document.getElementById('plot').on('plotly_click', handlePlotClick);
@@ -342,13 +366,14 @@
                 seriesName: point.data.name
             };
             
-            // If area popup is visible, start new region detection
-            if (areaPopupVisible) {
-                areaPopupVisible = false;
-                handleRegionClick(data);
-                return;
+            if (interactionMode === 'points') {
+                handlePointSelection(clickedPoint);
+            } else if (interactionMode === 'area') {
+                handleAreaSelection(data);
             }
-            
+        }
+        
+        function handlePointSelection(clickedPoint) {
             selectedPoints.push(clickedPoint);
             
             if (selectedPoints.length === 2) {
@@ -356,12 +381,61 @@
                 if (selectedPoints[0].x === selectedPoints[1].x) {
                     showDifferencePopup();
                 } else {
-                    // Different x values - try region detection instead
-                    selectedPoints = []; // Reset point selection
-                    handleRegionClick(data);
+                    // Show message that points need same X coordinate
+                    alert("For point comparison, please select two points at the same time (X-coordinate). Selected points will be reset.");
+                    selectedPoints = []; // Reset selection
                 }
             } else if (selectedPoints.length > 2) {
                 selectedPoints = [clickedPoint]; // Start new selection
+            }
+        }
+        
+        function handleAreaSelection(clickData) {
+            const point = clickData.points[0];
+            const clickX = point.x;
+            const clickY = point.y;
+            
+            const region = findEnclosingRegion(clickX, clickY);
+            
+            if (region) {
+                const area = calculateEnclosedArea(region);
+                showRegionPopup(region, area);
+            } else {
+                // More helpful error message
+                alert("No enclosed region found. Try clicking between intersecting curves or in areas where multiple lines create enclosed spaces.");
+            }
+        }
+        
+        function handlePointSelection(clickedPoint) {
+            selectedPoints.push(clickedPoint);
+            
+            if (selectedPoints.length === 2) {
+                // Check if both points have same x value for point difference
+                if (selectedPoints[0].x === selectedPoints[1].x) {
+                    showDifferencePopup();
+                } else {
+                    // Show message that points need same X coordinate
+                    alert("For point comparison, please select two points at the same time (X-coordinate). Selected points will be reset.");
+                    selectedPoints = []; // Reset selection
+                }
+            } else if (selectedPoints.length > 2) {
+                selectedPoints = [clickedPoint]; // Start new selection
+            }
+        }
+        
+        function handleAreaSelection(clickData) {
+            const point = clickData.points[0];
+            const clickX = point.x;
+            const clickY = point.y;
+            
+            const region = findEnclosingRegion(clickX, clickY);
+            
+            if (region) {
+                const area = calculateEnclosedArea(region);
+                showRegionPopup(region, area);
+            } else {
+                // More helpful error message
+                alert("No enclosed region found. Try clicking between intersecting curves or in areas where multiple lines create enclosed spaces.");
             }
         }
         function calculateEnergy(dataArray) {
@@ -440,11 +514,53 @@
                 }
             }
             
+            // Add boundary intersections (start and end of time range)
+            // This helps create regions at the edges
+            const timeStart = data.time[0];
+            const timeEnd = data.time[data.time.length - 1];
+            
+            visibleSeries.forEach((series, i) => {
+                visibleSeries.slice(i + 1).forEach(otherSeries => {
+                    // Add start point intersection if curves are different
+                    const startY1 = data[series][0];
+                    const startY2 = data[otherSeries][0];
+                    if (Math.abs(startY1 - startY2) > 1) {
+                        intersections.push({
+                            x: timeStart,
+                            y: Math.min(startY1, startY2),
+                            timeIndex: 0,
+                            series1: series,
+                            series2: otherSeries,
+                            isBoundary: true
+                        });
+                    }
+                    
+                    // Add end point intersection if curves are different
+                    const endIndex = data[series].length - 1;
+                    const endY1 = data[series][endIndex];
+                    const endY2 = data[otherSeries][endIndex];
+                    if (Math.abs(endY1 - endY2) > 1) {
+                        intersections.push({
+                            x: timeEnd,
+                            y: Math.min(endY1, endY2),
+                            timeIndex: endIndex,
+                            series1: series,
+                            series2: otherSeries,
+                            isBoundary: true
+                        });
+                    }
+                });
+            });
+            
+            return intersections.sort((a, b) => a.x - b.x);
+        }
+            
             return intersections.sort((a, b) => a.x - b.x);
         }
         
         function findIntersectionsBetweenSeries(series1Data, series2Data, timeData) {
             const intersections = [];
+            const tolerance = 0.1; // Tolerance for considering lines "equal"
             
             for (let i = 0; i < series1Data.length - 1; i++) {
                 const x1 = timeData[i];
@@ -458,7 +574,13 @@
                 const diff1 = y1_s1 - y1_s2;
                 const diff2 = y2_s1 - y2_s2;
                 
-                if (Math.abs(diff1) > 1e-10 && Math.abs(diff2) > 1e-10 && diff1 * diff2 < 0) {
+                // Skip if lines are too close (parallel/same)
+                if (Math.abs(diff1) <= tolerance && Math.abs(diff2) <= tolerance) {
+                    continue;
+                }
+                
+                // Check for intersection
+                if (Math.abs(diff1) > tolerance && Math.abs(diff2) > tolerance && diff1 * diff2 < 0) {
                     // Linear interpolation to find intersection point
                     const t = Math.abs(diff1) / (Math.abs(diff1) + Math.abs(diff2));
                     const intersectX = x1 + t * (x2 - x1);
@@ -468,6 +590,22 @@
                         x: intersectX,
                         y: intersectY,
                         timeIndex: i + t
+                    });
+                }
+                
+                // Also check if one line crosses the other at endpoints
+                if (Math.abs(diff1) <= tolerance && Math.abs(diff2) > tolerance) {
+                    intersections.push({
+                        x: x1,
+                        y: y1_s1,
+                        timeIndex: i
+                    });
+                }
+                if (Math.abs(diff2) <= tolerance && Math.abs(diff1) > tolerance) {
+                    intersections.push({
+                        x: x2,
+                        y: y2_s1,
+                        timeIndex: i + 1
                     });
                 }
             }
@@ -513,58 +651,72 @@
         function findEnclosingRegion(clickX, clickY) {
             const allIntersections = findAllIntersections();
             const visibleSeries = getVisibleSeries();
+            const tolerance = 20; // kW tolerance for Y-coordinate matching
             
-            if (allIntersections.length < 2) {
-                return null; // Need at least 2 intersections to form a region
+            if (visibleSeries.length < 2) {
+                return null;
             }
             
-            // Find intersections that bracket the click point in X
-            let leftBoundary = null;
-            let rightBoundary = null;
+            // Get all series values at the click X position
+            const seriesAtClick = [];
+            visibleSeries.forEach(seriesName => {
+                const value = getSeriesValueAtX(data[seriesName], data.time, clickX);
+                if (value !== null) {
+                    seriesAtClick.push({ name: seriesName, value: value });
+                }
+            });
             
-            for (let i = 0; i < allIntersections.length - 1; i++) {
-                const currentIntersection = allIntersections[i];
-                const nextIntersection = allIntersections[i + 1];
+            // Sort by value to find which curves the click is between
+            seriesAtClick.sort((a, b) => a.value - b.value);
+            
+            // Find which two curves the click is between
+            let lowerSeries = null;
+            let upperSeries = null;
+            
+            for (let i = 0; i < seriesAtClick.length - 1; i++) {
+                const lower = seriesAtClick[i];
+                const upper = seriesAtClick[i + 1];
                 
-                if (currentIntersection.x <= clickX && clickX <= nextIntersection.x) {
-                    // Check if click point is actually between the curves in this region
-                    const midX = (currentIntersection.x + nextIntersection.x) / 2;
-                    
-                    // Get all series values at the middle point
-                    const seriesValues = [];
-                    visibleSeries.forEach(seriesName => {
-                        const value = getSeriesValueAtX(data[seriesName], data.time, midX);
-                        if (value !== null) {
-                            seriesValues.push({ name: seriesName, value: value });
-                        }
-                    });
-                    
-                    // Sort by value to find which curves bound this region
-                    seriesValues.sort((a, b) => a.value - b.value);
-                    
-                    // Check if click Y is between any two consecutive curves
-                    for (let j = 0; j < seriesValues.length - 1; j++) {
-                        const lowerCurve = seriesValues[j];
-                        const upperCurve = seriesValues[j + 1];
-                        
-                        if (lowerCurve.value <= clickY && clickY <= upperCurve.value) {
-                            leftBoundary = currentIntersection;
-                            rightBoundary = nextIntersection;
-                            
-                            return {
-                                leftBoundary,
-                                rightBoundary,
-                                lowerSeries: lowerCurve.name,
-                                upperSeries: upperCurve.name,
-                                startX: currentIntersection.x,
-                                endX: nextIntersection.x
-                            };
-                        }
-                    }
+                if (lower.value <= clickY + tolerance && clickY - tolerance <= upper.value) {
+                    lowerSeries = lower.name;
+                    upperSeries = upper.name;
+                    break;
                 }
             }
             
-            return null;
+            if (!lowerSeries || !upperSeries) {
+                return null;
+            }
+            
+            // Find reasonable X boundaries (look for significant separation)
+            let startX = Math.max(0, clickX - 4); // Start 4 hours before click or at beginning
+            let endX = Math.min(24, clickX + 4);  // End 4 hours after click or at end
+            
+            // Try to find better boundaries based on intersections
+            const relevantIntersections = allIntersections.filter(intersection => 
+                (intersection.series1 === lowerSeries && intersection.series2 === upperSeries) ||
+                (intersection.series1 === upperSeries && intersection.series2 === lowerSeries)
+            );
+            
+            if (relevantIntersections.length >= 2) {
+                // Use actual intersections as boundaries
+                const beforeClick = relevantIntersections.filter(i => i.x <= clickX);
+                const afterClick = relevantIntersections.filter(i => i.x >= clickX);
+                
+                if (beforeClick.length > 0) {
+                    startX = beforeClick[beforeClick.length - 1].x;
+                }
+                if (afterClick.length > 0) {
+                    endX = afterClick[0].x;
+                }
+            }
+            
+            return {
+                lowerSeries: lowerSeries,
+                upperSeries: upperSeries,
+                startX: startX,
+                endX: endX
+            };
         }
         
         function calculateEnclosedArea(region) {
@@ -813,6 +965,9 @@
             
             // Initial plot
             createPlot();
+            // Add mode change listeners
+            document.getElementById('mode-points').addEventListener('change', updateInteractionMode);
+            document.getElementById('mode-area').addEventListener('change', updateInteractionMode);
         });
     </script>
 </body>
