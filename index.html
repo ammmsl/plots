@@ -89,13 +89,6 @@
         .deselect-all-btn:hover {
             background-color: #545b62;
         }
-        <div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
-            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Interaction Mode:</label>
-            <input type="radio" id="mode-points" name="interaction-mode" value="points" checked>
-            <label for="mode-points" style="margin-right: 15px;">Point Comparison</label>
-            <input type="radio" id="mode-area" name="interaction-mode" value="area">
-            <label for="mode-area">Area Calculation</label>
-        </div>
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -162,7 +155,13 @@
                 <button class="select-all-btn" onclick="selectAll()">Select All</button>
                 <button class="deselect-all-btn" onclick="deselectAll()">Deselect All</button>
             </div>
-            
+        <div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
+            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Interaction Mode:</label>
+            <input type="radio" id="mode-points" name="interaction-mode" value="points" checked>
+            <label for="mode-points" style="margin-right: 15px;">Point Comparison</label>
+            <input type="radio" id="mode-area" name="interaction-mode" value="area">
+            <label for="mode-area">Area Calculation</label>
+        </div>            
             <div class="group">
                 <div class="group-header" onclick="toggleGroup('load')">
                     <input type="checkbox" id="group-load" onchange="toggleGroupSelection('load')" checked>
@@ -551,10 +550,7 @@
                     }
                 });
             });
-            
-            return intersections.sort((a, b) => a.x - b.x);
-        }
-            
+
             return intersections.sort((a, b) => a.x - b.x);
         }
         
