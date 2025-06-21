@@ -144,7 +144,12 @@
         .popup-close:hover {
             color: #000;
         }
-        
+        #load-status {
+			font-size: 16px;
+			display: inline-block;
+			width: 250px; /* Fixed width to accommodate longest text */
+			text-align: center;
+		}
     </style>
 </head>
 <body>
@@ -207,95 +212,113 @@
                 </div>
                 <div class="group-items" id="current-items">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="810-575-75" class="group-current">
-                        <label for="810-575-75">810+575 75%</label>
+                        <input type="checkbox" id="650-460" class="group-current">
+                        <label for="650-460">650+460</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="810-200-75" class="group-current">
-                        <label for="810-200-75">810+200 75%</label>
+                        <input type="checkbox" id="650-160" class="group-current">
+                        <label for="650-160">650+160</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="200-638-75" class="group-current">
-                        <label for="200-638-75">200+638 75%</label>
+                        <input type="checkbox" id="160-508" class="group-current">
+                        <label for="160-508">160+508</label>
                     </div>                    
                     <div class="checkbox-item">
-                        <input type="checkbox" id="810-75" class="group-current">
-                        <label for="810-75">810 75%</label>
+                        <input type="checkbox" id="650" class="group-current">
+                        <label for="650">650</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="638-75" class="group-current">
-                        <label for="638-75">638 75%</label>
+                        <input type="checkbox" id="508" class="group-current">
+                        <label for="508">508</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="575-75" class="group-current">
-                        <label for="575-75">575 75%</label>
+                        <input type="checkbox" id="460" class="group-current">
+                        <label for="460">460</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="200-75" class="group-current">
-                        <label for="200-75">200 75%</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="group">
-                <div class="group-header" onclick="toggleGroup('250kva')">
-                    <input type="checkbox" id="group-250kva" onchange="toggleGroupSelection('250kva')">
-                    ⚡ 250kVA Unit
-                </div>
-                <div class="group-items" id="250kva-items">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="810-250vp-75" class="group-250kva">
-                        <label for="810-250vp-75">810+250(VP) 75%</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="638-250vp-75" class="group-250kva">
-                        <label for="638-250vp-75">638+250(VP) 75%</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="575-250vp-75" class="group-250kva">
-                        <label for="575-250vp-75">575+250(VP) 75%</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="200-250vp-75" class="group-250kva">
-                        <label for="200-250vp-75">200+250(VP) 75%</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="250kva-75" class="group-250kva">
-                        <label for="250kva-75">250kVA 75%</label>
+                        <input type="checkbox" id="160" class="group-current">
+                        <label for="160">160</label>
                     </div>
                 </div>
             </div>
 
             <div class="group">
-                <div class="group-header" onclick="toggleGroup('650kva')">
-                    <input type="checkbox" id="group-650kva" onchange="toggleGroupSelection('650kva')">
-                    ⚡ 650kVA Unit
+                <div class="group-header" onclick="toggleGroup('200kW')">
+                    <input type="checkbox" id="group-200kW" onchange="toggleGroupSelection('200kW')">
+                    ⚡ 200kW Unit
                 </div>
-                <div class="group-items" id="650kva-items">
+                <div class="group-items" id="200kW-items">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="810-650vp-75" class="group-650kva">
-                        <label for="810-650vp-75">810+650(VP) 75%</label>
+                        <input type="checkbox" id="650-200vp" class="group-200kW">
+                        <label for="650-200vp">650+200(VP)</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="638-650vp-75" class="group-650kva">
-                        <label for="638-650vp-75">638+650(VP) 75%</label>
+                        <input type="checkbox" id="508-200vp" class="group-200kW">
+                        <label for="508-200vp">508+200(VP)</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="575-650vp-75" class="group-650kva">
-                        <label for="575-650vp-75">575+650(VP) 75%</label>
+                        <input type="checkbox" id="460-200vp" class="group-200kW">
+                        <label for="460-200vp">460+200(VP)</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="200-650vp-75" class="group-650kva">
-                        <label for="200-650vp-75">200+650(VP) 75%</label>
+                        <input type="checkbox" id="160-200vp" class="group-200kW">
+                        <label for="160-200vp">160+200(VP)</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="650kva-75" class="group-650kva">
-                        <label for="650kva-75">650kVA 75%</label>
+                        <input type="checkbox" id="200kW" class="group-200kW">
+                        <label for="200kW">200kW</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="toggleGroup('520kW')">
+                    <input type="checkbox" id="group-520kW" onchange="toggleGroupSelection('520kW')">
+                    ⚡ 520kW Unit
+                </div>
+                <div class="group-items" id="520kW-items">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="650-520vp" class="group-520kW">
+                        <label for="650-520vp">650+520(VP)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="508-520vp" class="group-520kW">
+                        <label for="508-520vp">508+520(VP)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="460-520vp" class="group-520kW">
+                        <label for="460-520vp">460+520(VP)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="160-520vp" class="group-520kW">
+                        <label for="160-520vp">160+520(VP)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="520kW" class="group-520kW">
+                        <label for="520kW">520kW</label>
                     </div>
                 </div>
             </div>
         </div>
-
+		<div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
+			<label style="font-weight: bold; margin-bottom: 8px; display: block;">Generator Load Level:</label>
+			<div style="position: relative; margin: 10px 0;">
+				<input type="range" id="load-slider" min="25" max="100" value="75" step="5" 
+					   style="width: 100%; height: 8px; background: linear-gradient(to right, #ff4444 0%, #ff4444 28%, #ffaa44 28%, #ffaa44 68%, #44aa44 68%, #44aa44 72%, #4444ff 72%, #4444ff 100%);">
+				<div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px;">
+					<span style="color: #ff4444;">25% Damaging</span>
+					<span style="color: #ffaa44;">40% Min Safe</span>
+					<span style="color: #44aa44; font-weight: bold;">75% Optimal</span>
+					<span style="color: #4444ff;">100% Max</span>
+				</div>
+			</div>
+			<div style="text-align: center; font-weight: bold; margin: 5px 0;">
+				Current Load: <span id="load-value" style="color: #44aa44;">75%</span>
+			</div>
+			<div style="text-align: center; margin: 2px 0;">
+				<span id="load-status" style="font-size: 16px; color: #44aa44;">Optimal Efficiency</span>
+			</div>
+		</div>
         <div class="plot-container">
             <div id="plot" style="width: 100%; height: 600px;"></div>
         </div>
@@ -309,32 +332,49 @@
 
     <script>
         // Data
+		const generatorConfigs = {
+			'650+460': { units: [650, 460] },
+			'650': { units: [650] },
+			'650+160': { units: [650, 160] },
+			'160+508': { units: [160, 508] },
+			'460': { units: [460] },
+			'160': { units: [160] },
+			'508': { units: [508] },
+			'200kW': { units: [200] },
+			'520kW': { units: [520] },
+			'460+200(VP)': { units: [460, 200] },
+			'650+200(VP)': { units: [650, 200] },
+			'160+200(VP)': { units: [160, 200] },
+			'508+200(VP)': { units: [508, 200] },
+			'460+520(VP)': { units: [460, 520] },
+			'650+520(VP)': { units: [650, 520] },
+			'160+520(VP)': { units: [160, 520] },
+			'508+520(VP)': { units: [508, 520] }
+		};
+		
+		function calculateGeneratorOutput(config, loadPercentage = 100) {
+			const totalCapacity = config.units.reduce((sum, capacity) => sum + capacity, 0);
+			const outputValue = totalCapacity * (loadPercentage / 100);
+			return new Array(25).fill(outputValue);
+		}
+		function updateGeneratorData(loadPercentage) {
+			Object.keys(generatorConfigs).forEach(configName => {
+				data[configName] = calculateGeneratorOutput(generatorConfigs[configName], loadPercentage);
+			});
+		}
+		
         const data = {
             time: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
             'Present Load': [230, 237.1555765, 258.1346652, 291.507576, 335, 385.6480005, 440, 494.3519995, 545, 588.492424, 621.8653348, 642.8444235, 650, 642.8444235, 621.8653348, 588.492424, 545, 494.3519995, 440, 385.6480005, 335, 291.507576, 258.1346652, 237.1555765, 230],
-            'Predicted Load': [272.728913,264.5,272.728913,296.854865,335.2337123,385.25,443.4952006,506,568.5047994,626.75,676.7662877,715.145135,739.271087,747.5,739.271087,715.145135,676.7662877,626.75,568.5047994,506,443.4952006,385.25,335.2337123,296.854865,272.728913],
+            'Predicted Load': [272.728913,264.5,272.728913,296.854865,335.2337123,385.25,443.6602006,506,568.5047994,626.75,676.7662877,715.145135,739.271087,747.5,739.271087,715.145135,676.7662877,626.75,568.5047994,506,443.6602006,385.25,335.2337123,296.854865,272.728913],
             'Solar Power': [0,0,0,0,0,0,0,182.8401262,353.22,499.5285145,611.7949862,682.3686407,706.44,682.3686407,611.7949862,499.5285145,353.22,182.8401262,8.65494E-14,0,0,0,0,0,0],
             'Diesel Demand': [237.2,230.0,237.2,258.1,291.5,335.0,385.6,257.2,141.1,45.5,-23.3,-60.5,-63.6,-32.4,31.0,122.3,235.3,362.2,494.4,440.0,385.6,335.0,291.5,258.1,237.2],
-            '810+575 75%': [833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833,833],
-            '810 75%': [488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488,488],
-            '810+200 75%': [608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608,608],
-            '200+638 75%': [501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501],
-            '575 75%': [345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345,345],
-            '200 75%': [120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120],
-            '638 75%': [381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381,381],
-            '250kVA 75%': [150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150],
-            '650kVA 75%': [390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390,390],
-            '575+250(VP) 75%': [495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495],
-            '810+250(VP) 75%': [638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638,638],
-            '200+250(VP) 75%': [270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270,270],
-            '638+250(VP) 75%': [531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531,531],
-            '575+650(VP) 75%': [735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735,735],
-            '810+650(VP) 75%': [878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878,878],
-            '200+650(VP) 75%': [510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510,510],
-            '638+650(VP) 75%': [771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771,771]
         };
         data['Predicted Load'] = data['Present Load'].map(load => load * 1.15);
         data['Diesel Demand'] = data['Present Load'].map((load, index) => load - data['Solar Power'][index]);
+		
+		// Generator data will be populated by updateGeneratorData() function
+		
         let selectedPoints = [];
         let selectedAreaPoints = [];
         let areaPopupVisible = false;        
@@ -356,6 +396,36 @@
             selectedAreaPoints = [];
             closePopup();
         }
+		// Add slider
+		function updateLoadSlider() {
+			const loadValue = parseInt(document.getElementById('load-slider').value);
+			document.getElementById('load-value').textContent = loadValue + '%';
+			
+			// Update status message and color
+			const statusElement = document.getElementById('load-status');
+			const valueElement = document.getElementById('load-value');
+			
+			if (loadValue < 40) {
+				statusElement.textContent = 'Damaging Operation';
+				statusElement.style.color = '#ff4444';
+				valueElement.style.color = '#ff4444';
+			} else if (loadValue < 75) {
+				statusElement.textContent = 'Acceptable Operation';
+				statusElement.style.color = '#ffaa44';
+				valueElement.style.color = '#ffaa44';
+			} else if (loadValue === 75) {
+				statusElement.textContent = 'Optimal Efficiency';
+				statusElement.style.color = '#44aa44';
+				valueElement.style.color = '#44aa44';
+			} else {
+				statusElement.textContent = 'Higher Load Operation';
+				statusElement.style.color = '#4444ff';
+				valueElement.style.color = '#4444ff';
+			}
+			
+			updateGeneratorData(loadValue);
+			createPlot();
+		}
         // Add event listener after plot creation
         function addClickListener() {
             document.getElementById('plot').on('plotly_click', handlePlotClick);
@@ -797,25 +867,25 @@
                 ids: ['solar-power', 'diesel-demand']
             },
             current: {
-                color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6495ED', '#B0C4DE', '#4682B4'], // Extended blue tones
-                series: ['810+575 75%', '810 75%', '810+200 75%', '200+638 75%', '575 75%', '200 75%', '638 75%'],
+                color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
+                series: ['650+460', '650', '650+160', '160+508', '460', '160', '508'],
                 mode: 'lines',
                 dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
-                ids: ['810-575-75', '810-75', '810-200-75', '200-638-75', '575-75', '200-75', '638-75']
+                ids: ['650-460', '650', '650-160', '160-508', '460', '160', '508']
             },
-            '250kva': {
+            '200kW': {
                 color: ['#DC143C', '#B22222', '#FF1493', '#C71585', '#8B0000'], // Red/Pink tones
-                series: ['575+250(VP) 75%', '810+250(VP) 75%', '200+250(VP) 75%', '638+250(VP) 75%', '250kVA 75%'],
-                mode: 'lines',
+                series: ['460+200(VP)', '650+200(VP)', '160+200(VP)', '508+200(VP)', '200kW'],
+                mode: 'lines+markers',
                 dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash'],
-                ids: ['575-250vp-75', '810-250vp-75', '200-250vp-75', '638-250vp-75', '250kva-75']
+                ids: ['460-200vp', '650-200vp', '160-200vp', '508-200vp', '200kW']
             },
-            '650kva': {
+            '520kW': {
                 color: ['#9370DB', '#8A2BE2', '#9932CC', '#BA55D3', '#4B0082'], // Purple tones
-                series: ['575+650(VP) 75%', '810+650(VP) 75%', '200+650(VP) 75%', '638+650(VP) 75%', '650kVA 75%'],
-                mode: 'lines',
+                series: ['460+520(VP)', '650+520(VP)', '160+520(VP)', '508+520(VP)', '520kW'],
+                mode: 'lines+markers',
                 dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash'],
-                ids: ['575-650vp-75', '810-650vp-75', '200-650vp-75', '638-650vp-75', '650kva-75']
+                ids: ['460-520vp', '650-520vp', '160-520vp', '508-520vp', '520kW']
             }
         };
 
@@ -953,10 +1023,15 @@
         // Add event listeners to all checkboxes
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([id^="group-"])');
+			// Add load slider listener
+			document.getElementById('load-slider').addEventListener('input', updateLoadSlider);
+
+			// Initialize generator data with default 75% load
+			updateGeneratorData(75);
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     // Update group checkbox state
-                    const groups = ['load', 'solar', 'current', '250kva', '650kva'];
+                    const groups = ['load', 'solar', 'current', '200kW', '520kW'];
                     groups.forEach(groupName => {
                         if (checkbox.classList.contains('group-' + groupName)) {
                             updateGroupCheckbox(groupName);
