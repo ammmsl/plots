@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Summer Island Load Variation</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.1/plotly.min.js"></script>
     <style>
@@ -11,21 +11,50 @@
             margin: 20px;
             background-color: #f5f5f5;
         }
-        .container {
-            display: flex;
-            gap: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .controls {
-            width: 250px;
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #dee2e6;
-        }
+		.container {
+			display: flex;
+			gap: 20px;
+			flex-wrap: wrap;
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+		}
+
+		@media (max-width: 1024px) {
+			.container {
+				flex-direction: column;
+			}
+			
+			.controls {
+				width: 100%;
+				order: 2;
+			}
+			
+			.plot-container {
+				order: 1;
+				min-height: 500px;
+			}
+		}
+		.controls {
+			width: 250px;
+			background-color: #f8f9fa;
+			padding: 15px;
+			border-radius: 5px;
+			border: 1px solid #dee2e6;
+			max-height: 80vh;
+			overflow-y: auto;
+			position: sticky;
+			top: 20px;
+		}
+
+		/* Smooth scrolling for touch devices */
+		@media (hover: none) {
+			.controls {
+				-webkit-overflow-scrolling: touch;
+				max-height: 75vh;
+			}
+		}
         .plot-container {
             flex: 1;
             min-height: 600px;
@@ -36,22 +65,43 @@
             border-radius: 5px;
             padding: 10px;
         }
-        .group-header {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-            cursor: pointer;
-            user-select: none;
-        }
-        .group-header:hover {
-            color: #007bff;
-        }
+		.group-header {
+			font-weight: bold;
+			margin-bottom: 8px;
+			color: #333;
+			cursor: pointer;
+			user-select: none;
+			padding: 6px 4px;
+			min-height: 36px;
+			display: flex;
+			align-items: center;
+		}
+
+		.checkbox-item {
+			margin: 8px 0;
+			padding: 4px 0;
+			min-height: 44px;
+			display: flex;
+			align-items: center;
+		}
+
+		.checkbox-item input[type="checkbox"] {
+			margin-right: 10px;
+			transform: scale(1.05);
+			min-width: 16px;
+			min-height: 16px;
+		}
+		
         .group-items {
             margin-left: 10px;
         }
-        .checkbox-item {
-            margin: 5px 0;
-        }
+		.checkbox-item {
+			margin: 6px 0;
+			padding: 2px 0;
+			min-height: 36px;
+			display: flex;
+			align-items: center;
+		}
         .checkbox-item input[type="checkbox"] {
             margin-right: 8px;
         }
@@ -64,16 +114,15 @@
             color: #333;
             margin-bottom: 20px;
         }
-        .select-all-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
-        }
+		.select-all-btn, .deselect-all-btn {
+			min-height: 36px;
+			padding: 6px 12px;
+			font-size: 13px;
+			border-radius: 4px;
+			cursor: pointer;
+			border: none;
+			margin: 2px;
+		}
         .select-all-btn:hover {
             background-color: #0056b3;
         }
@@ -150,6 +199,132 @@
 			width: 250px; /* Fixed width to accommodate longest text */
 			text-align: center;
 		}
+		.slider-container {
+			width: 100%;
+			max-width: 400px;
+			margin-left: auto;
+			margin-top: 15px;
+			padding: 15px;
+			background-color: #f8f9fa;
+			border-radius: 5px;
+			border: 1px solid #dee2e6;
+		}
+		#load-slider {
+			width: 100%;
+			height: 12px;
+			-webkit-appearance: none;
+			appearance: none;
+			background: linear-gradient(to right, #ff4444 0%, #ff4444 28%, #ffaa44 28%, #ffaa44 68%, #44aa44 68%, #44aa44 72%, #4444ff 72%, #4444ff 100%);
+			border-radius: 6px;
+			outline: none;
+		}
+
+		#load-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 20px;
+			height: 20px;
+			background: #fff;
+			border: 2px solid #333;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+
+		#load-slider::-moz-range-thumb {
+			width: 20px;
+			height: 20px;
+			background: #fff;
+			border: 2px solid #333;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+		/* Default desktop styles */
+		.checkbox-item {
+			margin: 5px 0;
+			min-height: 28px;
+		}
+
+		.checkbox-item input[type="checkbox"] {
+			margin-right: 8px;
+			transform: scale(1.0);
+		}
+
+		.group-header {
+			min-height: 32px;
+			padding: 4px;
+		}
+
+		/* Tablet styles (iPad size) */
+		@media (max-width: 1024px) and (min-width: 768px) {
+			.checkbox-item {
+				margin: 6px 0;
+				min-height: 36px;
+			}
+			
+			.checkbox-item input[type="checkbox"] {
+				margin-right: 10px;
+				transform: scale(1.05);
+			}
+			
+			.group-header {
+				min-height: 36px;
+				padding: 6px 4px;
+			}
+			
+			.controls {
+				max-height: 70vh;
+				overflow-y: auto;
+			}
+		}
+
+		/* Phone styles */
+		@media (max-width: 767px) {
+			.checkbox-item {
+				margin: 8px 0;
+				min-height: 44px;
+			}
+			
+			.checkbox-item input[type="checkbox"] {
+				margin-right: 12px;
+				transform: scale(1.1);
+			}
+			
+			.group-header {
+				min-height: 44px;
+				padding: 8px 4px;
+			}
+		}
+		/* Touch device detection */
+		@media (hover: none) and (pointer: coarse) {
+			/* This targets touch devices specifically */
+			.checkbox-item {
+				margin: 7px 0;
+				min-height: 38px;
+			}
+			
+			.checkbox-item input[type="checkbox"] {
+				transform: scale(1.08);
+			}
+			
+			.select-all-btn, .deselect-all-btn {
+				min-height: 40px;
+				padding: 8px 14px;
+			}
+		}
+		.compact-mode .checkbox-item {
+			margin: 2px 0;
+			min-height: 24px;
+		}
+
+		.compact-mode .group-header {
+			min-height: 28px;
+			padding: 2px 4px;
+			font-size: 13px;
+		}
+
+		.compact-mode .checkbox-item label {
+			font-size: 12px;
+		}
     </style>
 </head>
 <body>
@@ -160,6 +335,11 @@
                 <button class="select-all-btn" onclick="selectAll()">Select All</button>
                 <button class="deselect-all-btn" onclick="deselectAll()">Deselect All</button>
             </div>
+			<div style="margin-bottom: 10px;">
+				<button class="select-all-btn" onclick="toggleCompactMode()" id="compact-toggle">
+					Compact View
+				</button>
+			</div>
             <div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
                 <label style="font-weight: bold; margin-bottom: 5px; display: block;">Interaction Mode:</label>
                 <div style="margin: 5px 0;">
@@ -300,6 +480,9 @@
                 </div>
             </div>
         </div>
+        <div class="plot-container">
+            <div id="plot" style="width: 100%; height: 600px;"></div>
+        </div>
 		<div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
 			<label style="font-weight: bold; margin-bottom: 8px; display: block;">Generator Load Level:</label>
 			<div style="position: relative; margin: 10px 0;">
@@ -319,9 +502,6 @@
 				<span id="load-status" style="font-size: 16px; color: #44aa44;">Optimal Efficiency</span>
 			</div>
 		</div>
-        <div class="plot-container">
-            <div id="plot" style="width: 100%; height: 600px;"></div>
-        </div>
         <div id="popup-overlay" class="popup-overlay" onclick="closePopup()">
             <div class="popup" onclick="event.stopPropagation()">
                 <button class="popup-close" onclick="closePopup()">&times;</button>
@@ -927,36 +1107,38 @@
                 });
             });
 
-            const layout = {
-                title: {
-                    text: 'Summer Island Load Variation',
-                    font: { size: 20 }
-                },
-                xaxis: {
-                    title: 'Time (hr)',
-                    gridcolor: '#e6e6e6',
-                    tick0: 0,
-                    dtick: 1,
-                    range: [0, 24]
-                },
-                yaxis: {
-                    title: 'Load (kW)',
-                    gridcolor: '#e6e6e6'
-                },
-                plot_bgcolor: 'white',
-                paper_bgcolor: 'white',
-                legend: {
-                    x: 1.02,
-                    y: 1,
-                    orientation: 'v'
-                },
-                margin: {
-                    l: 80,
-                    r: 150,
-                    t: 60,
-                    b: 60
-                }
-            };
+			const layout = {
+				title: {
+					text: 'Summer Island Load Variation',
+					font: { size: window.innerWidth < 768 ? 16 : 20 }
+				},
+				xaxis: {
+					title: 'Time (hr)',
+					gridcolor: '#e6e6e6',
+					tick0: 0,
+					dtick: 1,
+					range: [0, 24],
+					titlefont: { size: window.innerWidth < 768 ? 12 : 14 }
+				},
+				yaxis: {
+					title: 'Load (kW)',
+					gridcolor: '#e6e6e6',
+					titlefont: { size: window.innerWidth < 768 ? 12 : 14 }
+				},
+				plot_bgcolor: 'white',
+				paper_bgcolor: 'white',
+				legend: {
+					x: window.innerWidth < 768 ? 0 : 1.02,
+					y: window.innerWidth < 768 ? -0.2 : 1,
+					orientation: window.innerWidth < 768 ? 'h' : 'v'
+				},
+				margin: {
+					l: window.innerWidth < 768 ? 60 : 80,
+					r: window.innerWidth < 768 ? 20 : 150,
+					t: 60,
+					b: window.innerWidth < 768 ? 120 : 60
+				}
+			};
 
             const config = {
                 responsive: true,
@@ -1047,6 +1229,54 @@
             document.getElementById('mode-points').addEventListener('change', updateInteractionMode);
             document.getElementById('mode-area').addEventListener('change', updateInteractionMode);
         });
+		
+		// Auto-collapse groups on smaller screens
+		function adjustForScreenSize() {
+			const isTabletOrSmaller = window.innerWidth <= 1024;
+			
+			if (isTabletOrSmaller) {
+				// Collapse all groups except Load and Solar by default
+				['current', '200kW', '520kW'].forEach(groupName => {
+					const items = document.getElementById(groupName + '-items');
+					if (items) {
+						items.style.display = 'none';
+					}
+				});
+			}
+		}
+
+		// Call on load and resize
+		window.addEventListener('load', adjustForScreenSize);
+		window.addEventListener('resize', adjustForScreenSize);
+		
+		function adjustControlsHeight() {
+			const controls = document.querySelector('.controls');
+			const windowHeight = window.innerHeight;
+			const containerTop = controls.getBoundingClientRect().top;
+			const maxHeight = windowHeight - containerTop - 40; // 40px buffer
+			
+			controls.style.maxHeight = `${maxHeight}px`;
+		}
+
+		// Call on load and resize
+		window.addEventListener('load', adjustControlsHeight);
+		window.addEventListener('resize', adjustControlsHeight);
+		
+		let compactMode = false;
+
+		function toggleCompactMode() {
+			compactMode = !compactMode;
+			const controls = document.querySelector('.controls');
+			const button = document.getElementById('compact-toggle');
+			
+			if (compactMode) {
+				controls.classList.add('compact-mode');
+				button.textContent = 'Normal View';
+			} else {
+				controls.classList.remove('compact-mode');
+				button.textContent = 'Compact View';
+			}
+		}
     </script>
 </body>
 </html>
