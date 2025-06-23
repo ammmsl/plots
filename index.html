@@ -201,9 +201,17 @@
                         <input type="checkbox" id="solar-power" class="group-solar" checked>
                         <label for="solar-power">Solar Power</label>
                     </div>
+					<div class="checkbox-item">
+                        <input type="checkbox" id="solar-power-2" class="group-solar">
+                        <label for="solar-power-2">Solar Power 2</label>
+                    </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="diesel-demand" class="group-solar" checked>
                         <label for="diesel-demand">Diesel Demand</label>
+                    </div>
+					<div class="checkbox-item">
+                        <input type="checkbox" id="diesel-demand-2" class="group-solar" checked>
+                        <label for="diesel-demand">Diesel Demand 2</label>
                     </div>
                 </div>
             </div>
@@ -376,10 +384,12 @@
             'Present Load': [230, 237.1555765, 258.1346652, 291.507576, 335, 385.6480005, 440, 494.3519995, 545, 588.492424, 621.8653348, 642.8444235, 650, 642.8444235, 621.8653348, 588.492424, 545, 494.3519995, 440, 385.6480005, 335, 291.507576, 258.1346652, 237.1555765, 230],
             'Predicted Load': [272.728913,264.5,272.728913,296.854865,335.2337123,385.25,443.6602006,506,568.5047994,626.75,676.7662877,715.145135,739.271087,747.5,739.271087,715.145135,676.7662877,626.75,568.5047994,506,443.6602006,385.25,335.2337123,296.854865,272.728913],
             'Solar Power': [0,0,0,0,0,0,0,182.8401262,353.22,499.5285145,611.7949862,682.3686407,706.44,682.3686407,611.7949862,499.5285145,353.22,182.8401262,8.65494E-14,0,0,0,0,0,0],
+			'Solar Power 2': [0,0,0,0,0,0,0,400.694587,774.0825,1094.71797,1340.750219,1495.412557,1548.165,1495.412557,1340.750219,1094.71797,774.0825,400.694587,1.89673E-13,0,0,0,0,0,0], 
             'Diesel Demand': [237.2,230.0,237.2,258.1,291.5,335.0,385.6,257.2,141.1,45.5,-23.3,-60.5,-63.6,-32.4,31.0,122.3,235.3,362.2,494.4,440.0,385.6,335.0,291.5,258.1,237.2],
         };
         data['Predicted Load'] = data['Present Load'].map(load => load * 1.15);
         data['Diesel Demand'] = data['Present Load'].map((load, index) => load - data['Solar Power'][index]);
+		data['Diesel Demand 2'] = data['Present Load'].map((load, index) => load - data['Solar Power 2'][index]);
 		
 		// Generator data will be populated by updateGeneratorData() function
 		
@@ -867,13 +877,13 @@
                 symbols: ['circle', 'square'],
                 ids: ['present-load', 'predicted-load']
             },
-            solar: {
-                color: ['#FF8C00', '#FF6347'], // Orange tones
-                series: ['Solar Power', 'Diesel Demand'],
-                mode: 'markers+lines',
-                symbols: ['diamond', 'triangle-up'],
-                ids: ['solar-power', 'diesel-demand']
-            },
+			solar: {
+				color: ['#FF8C00', '#FFA500', '#FF6347', '#DC143C'], // Orange/Red tones - ADD FOURTH COLOR
+				series: ['Solar Power', 'Solar Power 2', 'Diesel Demand', 'Diesel Demand 2'], // ADD BOTH NEW SERIES
+				mode: 'markers+lines',
+				symbols: ['diamond', 'star', 'triangle-up', 'triangle-down'], // ADD 'star' AND 'triangle-down'
+				ids: ['solar-power', 'solar-power-2', 'diesel-demand', 'diesel-demand-2'] // ADD BOTH NEW IDS
+			},
 			current: {
 				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
 				series: ['650+460', '650', '650+160', '508+160', '460+160', '460', '160', '508'],  // ADD '460+160' HERE
