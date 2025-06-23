@@ -456,8 +456,11 @@
 		}
         // Add event listener after plot creation
         function addClickListener() {
-            document.getElementById('plot').on('plotly_click', handlePlotClick);
-        }
+	    const plotDiv = document.getElementById('plot');
+	    Plotly.newPlot('plot', traces, layout, config).then(() => {
+	        plotDiv.on('plotly_click', handlePlotClick);
+	    });
+	}
         
         function handlePlotClick(data) {
             const point = data.points[0];
@@ -1041,7 +1044,7 @@
             checkboxes.forEach(cb => cb.checked = true);
             createPlot();
         }
-
+	updateGeneratorData(75);
         function deselectAll() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
