@@ -211,7 +211,7 @@
                     </div>
 					<div class="checkbox-item">
                         <input type="checkbox" id="diesel-demand-2" class="group-solar" checked>
-                        <label for="diesel-demand-2">Diesel Demand 2</label>
+                        <label for="diesel-demand">Diesel Demand 2</label>
                     </div>
                 </div>
             </div>
@@ -223,16 +223,8 @@
                 </div>
                 <div class="group-items" id="current-items">
                     <div class="checkbox-item">
-			<input type="checkbox" id="650-508" class="group-current">
-			<label for="650-508">650+508</label>
-                    </div>	
-                    <div class="checkbox-item">
                         <input type="checkbox" id="650-460" class="group-current">
                         <label for="650-460">650+460</label>
-                    </div>
-                    <div class="checkbox-item">
-			<input type="checkbox" id="508-460" class="group-current">
-			<label for="508-460">508+460</label>
                     </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="650-160" class="group-current">
@@ -356,9 +348,7 @@
     <script>
         // Data
 		const generatorConfigs = {
-			'650+508': { units: [650, 508] }, 
 			'650+460': { units: [650, 460] },
-			'508+460': { units: [508, 460] },
 			'650': { units: [650] },
 			'650+160': { units: [650, 160] },
 			'508+160': { units: [508, 160] },
@@ -375,7 +365,7 @@
 			'460+520(VP)': { units: [460, 520] },
 			'650+520(VP)': { units: [650, 520] },
 			'160+520(VP)': { units: [160, 520] },
-			'508+520(VP)': { units: [508, 520] },
+			'508+520(VP)': { units: [508, 520] }
 		};
 		
 		function calculateGeneratorOutput(config, loadPercentage = 100) {
@@ -456,11 +446,8 @@
 		}
         // Add event listener after plot creation
         function addClickListener() {
-	    const plotDiv = document.getElementById('plot');
-	    Plotly.newPlot('plot', traces, layout, config).then(() => {
-	        plotDiv.on('plotly_click', handlePlotClick);
-	    });
-	}
+            document.getElementById('plot').on('plotly_click', handlePlotClick);
+        }
         
         function handlePlotClick(data) {
             const point = data.points[0];
@@ -898,25 +885,25 @@
 				ids: ['solar-power', 'solar-power-2', 'diesel-demand', 'diesel-demand-2'] // ADD BOTH NEW IDS
 			},
 			current: {
-				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4', '#20B2AA', '#5F9EA0'], // Extended blue tones - ADD TWO MORE COLORS
-				series: ['650+460', '650', '650+160', '650+508', '508+160', '508+460', '460+160', '460', '160', '508'],  // ADD '650+508' AND '508+460'
+				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
+				series: ['650+460', '650', '650+160', '508+160', '460+160', '460', '160', '508'],  // ADD '460+160' HERE
 				mode: 'lines',
-				dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5', '10,5', '2,2,10,2'], // ADD TWO MORE DASH STYLES
-				ids: ['650+460', '650', '650+160', '650+508', '508+160', '508+460', '460+160', '460', '160', '508'],  // ADD '650-508' AND '508-460'
+				dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
+				ids: ['650-460', '650', '650-160', '508-160', '460-160', '460', '160', '508']  // ADD '460-160' HERE
 			},
             '200kW': {
                 color: ['#DC143C', '#B22222', '#FF1493', '#C71585', '#8B0000'], // Red/Pink tones
                 series: ['460+200(VP)', '650+200(VP)', '160+200(VP)', '508+200(VP)', '200kW'],
                 mode: 'lines+markers',
                 dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash'],
-                ids: ['460+200vp', '650+200vp', '160+200vp', '508+200vp', '200kW']
+                ids: ['460-200vp', '650-200vp', '160-200vp', '508-200vp', '200kW']
             },
             '520kW': {
                 color: ['#9370DB', '#8A2BE2', '#9932CC', '#BA55D3', '#4B0082'], // Purple tones
                 series: ['460+520(VP)', '650+520(VP)', '160+520(VP)', '508+520(VP)', '520kW'],
                 mode: 'lines+markers',
                 dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash'],
-                ids: ['460+520vp', '650+520vp', '160+520vp', '508+520vp', '520kW']
+                ids: ['460-520vp', '650-520vp', '160-520vp', '508-520vp', '520kW']
             }
         };
 
@@ -1044,7 +1031,7 @@
             checkboxes.forEach(cb => cb.checked = true);
             createPlot();
         }
-	updateGeneratorData(75);
+
         function deselectAll() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = false);
