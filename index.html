@@ -223,9 +223,13 @@
                         <label for="650-160">650+160</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="160-508" class="group-current">
-                        <label for="160-508">160+508</label>
+                        <input type="checkbox" id="508-160" class="group-current">
+                        <label for="508-160">508+160</label>
                     </div>                    
+					<div class="checkbox-item">
+                        <input type="checkbox" id="460-160" class="group-current">
+                        <label for="460-160">460+160</label>
+                    </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="650" class="group-current">
                         <label for="650">650</label>
@@ -339,10 +343,11 @@
 			'650+460': { units: [650, 460] },
 			'650': { units: [650] },
 			'650+160': { units: [650, 160] },
-			'160+508': { units: [160, 508] },
+			'508+160': { units: [508, 160] },
+			'460+160': { units: [460, 160] }, 
+			'508': { units: [508] },
 			'460': { units: [460] },
 			'160': { units: [160] },
-			'508': { units: [508] },
 			'200kW': { units: [200] },
 			'520kW': { units: [520] },
 			'460+200(VP)': { units: [460, 200] },
@@ -869,13 +874,13 @@
                 symbols: ['diamond', 'triangle-up'],
                 ids: ['solar-power', 'diesel-demand']
             },
-            current: {
-                color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
-                series: ['650+460', '650', '650+160', '160+508', '460', '160', '508'],
-                mode: 'lines',
-                dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
-                ids: ['650-460', '650', '650-160', '160-508', '460', '160', '508']
-            },
+			current: {
+				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
+				series: ['650+460', '650', '650+160', '508+160', '460+160', '460', '160', '508'],  // ADD '460+160' HERE
+				mode: 'lines',
+				dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
+				ids: ['650-460', '650', '650-160', '508-160', '460-160', '460', '160', '508']  // ADD '460-160' HERE
+			},
             '200kW': {
                 color: ['#DC143C', '#B22222', '#FF1493', '#C71585', '#8B0000'], // Red/Pink tones
                 series: ['460+200(VP)', '650+200(VP)', '160+200(VP)', '508+200(VP)', '200kW'],
