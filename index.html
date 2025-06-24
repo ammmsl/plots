@@ -185,7 +185,7 @@
                         <label for="present-load">Present Load</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="predicted-load" class="group-load" checked>
+                        <input type="checkbox" id="predicted-load" class="group-load">
                         <label for="predicted-load">Predicted Load</label>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
                 </div>
                 <div class="group-items" id="solar-items">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="solar-power" class="group-solar" checked>
+                        <input type="checkbox" id="solar-power" class="group-solar">
                         <label for="solar-power">Solar Power</label>
                     </div>
 					<div class="checkbox-item">
@@ -206,11 +206,11 @@
                         <label for="solar-power-2">Solar Power 2</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="diesel-demand" class="group-solar" checked>
+                        <input type="checkbox" id="diesel-demand" class="group-solar">
                         <label for="diesel-demand">Diesel Demand</label>
                     </div>
 					<div class="checkbox-item">
-                        <input type="checkbox" id="diesel-demand-2" class="group-solar" checked>
+                        <input type="checkbox" id="diesel-demand-2" class="group-solar">
                         <label for="diesel-demand">Diesel Demand 2</label>
                     </div>
                 </div>
@@ -223,8 +223,16 @@
                 </div>
                 <div class="group-items" id="current-items">
                     <div class="checkbox-item">
+                        <input type="checkbox" id="650-508" class="group-current">
+                        <label for="650-508">650+508</label>
+                    </div>
+                    <div class="checkbox-item">
                         <input type="checkbox" id="650-460" class="group-current">
                         <label for="650-460">650+460</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="508-460" class="group-current">
+                        <label for="508-460">508+460</label>
                     </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="650-160" class="group-current">
@@ -320,7 +328,7 @@
 			<div style="margin-bottom: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
 				<label style="font-weight: bold; margin-bottom: 8px; display: block;">Generator Load Level:</label>
 				<div style="position: relative; margin: 10px 0;">
-					<input type="range" id="load-slider" min="25" max="100" value="75" step="5" 
+					<input type="range" id="load-slider" min="25" max="100" value="100" step="5" 
 						   style="width: 100%; height: 8px; background: linear-gradient(to right, #ff4444 0%, #ff4444 28%, #ffaa44 28%, #ffaa44 68%, #44aa44 68%, #44aa44 72%, #4444ff 72%, #4444ff 100%);">
 					<div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px;">
 						<span style="color: #ff4444;">25% Damaging</span>
@@ -330,10 +338,10 @@
 					</div>
 				</div>
 				<div style="text-align: center; font-weight: bold; margin: 5px 0;">
-					Current Load: <span id="load-value" style="color: #44aa44;">75%</span>
+					Current Load: <span id="load-value" style="color: #44aa44;">100%</span>
 				</div>
 				<div style="text-align: center; margin: 2px 0;">
-					<span id="load-status" style="font-size: 16px; color: #44aa44;">Optimal Efficiency</span>
+					<span id="load-status" style="font-size: 16px; color: #4444ff;">Higher Load Operation</span>
 				</div>
 			</div>
         </div>
@@ -349,6 +357,8 @@
         // Data
 		const generatorConfigs = {
 			'650+460': { units: [650, 460] },
+			'650+508': { units: [650, 508] },
+			'508+460': { units: [508, 460] },
 			'650': { units: [650] },
 			'650+160': { units: [650, 160] },
 			'508+160': { units: [508, 160] },
@@ -885,11 +895,11 @@
 				ids: ['solar-power', 'solar-power-2', 'diesel-demand', 'diesel-demand-2'] // ADD BOTH NEW IDS
 			},
 			current: {
-				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4'], // Extended blue tones
-				series: ['650+460', '650', '650+160', '508+160', '460+160', '460', '160', '508'],  // ADD '460+160' HERE
+				color: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEEB', '#6660ED', '#B0C4DE', '#4682B4', '#20B2AA', '#48D1CC'], // Extended blue tones
+				series: ['650+460', '650+508', '508+460', '650', '650+160', '508+160', '460+160', '460', '160', '508'],
 				mode: 'lines',
-				dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5'],
-				ids: ['650-460', '650', '650-160', '508-160', '460-160', '460', '160', '508']  // ADD '460-160' HERE
+				dash: ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot', '5,5,1,5', '2,2', '10,5'],
+				ids: ['650-508','650-460', '508-460', '650', '650-160', '508-160', '460-160', '460', '160', '508']
 			},
             '200kW': {
                 color: ['#DC143C', '#B22222', '#FF1493', '#C71585', '#8B0000'], // Red/Pink tones
@@ -1044,8 +1054,8 @@
 			// Add load slider listener
 			document.getElementById('load-slider').addEventListener('input', updateLoadSlider);
 
-			// Initialize generator data with default 75% load
-			updateGeneratorData(75);
+			// Initialize generator data with default 100% load
+			updateGeneratorData(100);
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     // Update group checkbox state
