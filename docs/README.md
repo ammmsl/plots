@@ -25,8 +25,3 @@ This folder is the specification reference for the MicroGrid Optimiser. It descr
 
 If you change a numeric constant in `/src` or `app.jsx`, update the matching `A-ID` row in `ASSUMPTIONS.md` in the same PR. See the rule at the top of that file.
 
-## Related
-
-- [../MICROGRID_PROJECT_CONTEXT.md](../MICROGRID_PROJECT_CONTEXT.md) — elevator pitch and product context
-- [../Phase 1 Refactor Handover.md](../Phase%201%20Refactor%20Handover.md) — architectural refactor notes
-- [../Phase 2 Performance Optimisation.md](../Phase%202%20Performance%20Optimisation.md) — memoisation and render work
