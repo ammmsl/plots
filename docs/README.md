@@ -11,7 +11,6 @@ This folder is the specification reference for the MicroGrid Optimiser. It descr
 | [PARAMETERS.md](PARAMETERS.md) | How input parameters interact, with a directional matrix and priority-driven decision trees |
 | [WORKFLOWS.md](WORKFLOWS.md) | Five worked examples — how to configure the tool to answer specific customer questions |
 | [ELECTRICAL_INFRA_MODAL_SPEC.md](ELECTRICAL_INFRA_MODAL_SPEC.md) | Full specification for the Electrical Infrastructure Modal — cost model, UI, TCO integration, assumptions |
-| [ELECTRICAL_INFRA_MODAL_DEV_PLAN.md](ELECTRICAL_INFRA_MODAL_DEV_PLAN.md) | Phased development plan — four phases, verification criteria, implementation notes |
 
 ## Reading order
 
